@@ -61,19 +61,22 @@ def get_readable_file_size(size_in_bytes) -> str:
 def getDownloadByGid(gid):
     with download_dict_lock:
         for dl in download_dict.values():
-            if dl.status() == MirrorStatus.STATUS_DOWNLOADING or dl.status() == MirrorStatus.STATUS_WAITING:
-                if dl.gid() == gid:
-                    return dl
+            if (
+                dl.status()
+                in [
+                    MirrorStatus.STATUS_DOWNLOADING,
+                    MirrorStatus.STATUS_WAITING,
+                ]
+                and dl.gid() == gid
+            ):
+                return dl
     return None
 
 
 def get_progress_bar_string(status):
     completed = status.processed_bytes() / 8
     total = status.size_raw() / 8
-    if total == 0:
-        p = 0
-    else:
-        p = round(completed * 100 / total)
+    p = 0 if total == 0 else round(completed * 100 / total)
     p = min(max(p, 0), 100)
     cFull = p // 8
     cPart = p % 8 - 1
@@ -123,14 +126,8 @@ def get_readable_time(seconds: int) -> str:
 
 
 def is_url(url: str):
-    url = re.findall(URL_REGEX, url)
-    if url:
-        return True
-    return False
+    return bool(url := re.findall(URL_REGEX, url))
 
 
 def is_magnet(url: str):
-    magnet = re.findall(MAGNET_REGEX, url)
-    if magnet:
-        return True
-    return False
+    return bool(magnet := re.findall(MAGNET_REGEX, url))

@@ -21,7 +21,6 @@ def editMessage(text: str, message: Message):
                               parse_mode='HTMl')
     except TimedOut as e:
         LOGGER.error(str(e))
-        pass
 
 
 def deleteMessage(bot, message: Message):
@@ -59,7 +58,6 @@ def delete_all_messages():
             except BadRequest as e:
                 LOGGER.info(str(e))
                 del status_reply_dict[message.chat.id]
-                pass
 
 
 def update_all_messages():
@@ -85,6 +83,5 @@ def sendStatusMessage(msg, bot):
             except Exception as e:
                 LOGGER.error(str(e))
                 del status_reply_dict[msg.message.chat.id]
-                pass
         message = sendMessage(progress, bot, msg)
         status_reply_dict[msg.message.chat.id] = message
